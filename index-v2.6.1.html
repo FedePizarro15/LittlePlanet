@@ -1,0 +1,107 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+    body {
+        margin: 0;
+        background: black;
+        font-family: sans-serif;
+        color: rgb(27, 27, 14);
+    }
+
+    .stats-panel {
+        float: left;
+        opacity: 75%;
+        background-color: rgb(240, 231, 216);
+        border-width: 3px;
+        border-color: rgb(135, 118, 99);
+    }
+
+    .modal {
+        position: absolute;
+        background-color: rgb(240, 231, 216);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        width: 400px;
+        text-align: center;
+        font-weight: bolder;
+        border-radius: 10px;
+        border-width: 4px;
+        border-color: rgb(135, 118, 99);
+    }
+
+    .modal-elem {
+        width: 33%;
+        border-width: 2px;
+        border-color: rgb(135, 118, 99);
+        background-color: rgb(210, 201, 186);
+        padding: 2px;
+        margin: 0 auto;
+    }
+
+    .game-button {
+        background-color: rgb(47, 84, 117);
+        font-size: 16px;
+        border-width: 3px;
+        box-sizing: border-box;
+        border-color: rgb(27, 64, 97);
+    }
+</style>
+
+<div style="position: fixed;">
+    <div class="stats-panel text-sm mt-3 ml-2 select-none pl-3 pr-3 pt-1 pb-1 rounded-full">
+        <span>Record: </span><span id="recordEl">0</span>
+    </div>
+    <div class="stats-panel text-sm mt-3 ml-2 select-none pl-3 pr-3 pt-1 pb-1 rounded-full">
+        <span>Score: </span><span id="scoreEl">0</span>
+    </div>
+    <div class="stats-panel text-sm mt-3 ml-2 select-none pl-3 pr-3 pt-1 pb-1 rounded-full">
+        <span>Time: </span><span id="timeEl">00:00</span>
+    </div>
+</div>
+
+<div id="modalEl" class="modal select-none" style="display: block; height: 260px;">
+    <h1 class="text-center">
+        <img src="../Logo.jpeg" alt="Logo" style="width: 360px; height: 165px;">
+    </h1>
+    <div>
+        <button id="startGameBtn" class="game-button text-white w-5/12 rounded-full h-10">
+            Start Game
+        </button>
+    </div>
+</div>
+
+<div id="GOEl" class="modal select-none" style="display: none; height: 400px;">
+    <label class="modal-elem text-2xl rounded-full" style="padding: 5px 15px;">Game Over</label>
+    <h1 id="bigScoreEl" class="text-5xl mt-6">0</h1>
+    <p class="modal-elem text-xl rounded-full mt-1">Points</p>
+    <h1 id="bigRecordEl" class="text-4xl mt-2">0</h1>
+    <p class="modal-elem text-sm rounded-full">Record</p>
+    <h1 id="bigTimeEl" class="text-4xl mt-2">0</h1>
+    <p class="modal-elem text-sm rounded-full mb-1">Time</p>
+    <button id="restartGameBtn" class="game-button text-white w-5/12 rounded-full mt-4 h-10">
+        Restart Game
+    </button>
+</div>
+
+<div id="pauseEl" class="modal select-none" style="display: none; height: 400px;">
+    <label class="modal-elem text-2xl rounded-full" style="padding: 5px 15px;">Pause</label>
+        <h1 id="bigScoreEl2" class="text-5xl mt-6">0</h1>
+        <p class="modal-elem text-xl rounded-full mt-1">Points</p>
+        <h1 id="bigRecordEl2" class="text-4xl mt-2">0</h1>
+        <p class="modal-elem text-sm rounded-full">Record</p>
+        <h1 id="bigTimeEl2" class="text-4xl mt-2">0</h1>
+        <p class="modal-elem text-sm rounded-full mb-1">Time</p>
+    <button id="continueGameBtn" class="game-button text-white w-5/12 rounded-full mt-4 mr-2 h-10">
+        Continue Game
+    </button>
+    <button id="restartGameBtn2" class="game-button text-white w-5/12 rounded-full mt-4 ml-2 h-10">
+        Restart Game
+    </button>
+</div>
+
+<canvas></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="./main.js" type="module"></script>
