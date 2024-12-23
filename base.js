@@ -1,11 +1,10 @@
 // Cuando se Activa el Disparo Doble las balas se Dividen, se Dirigen más Rápido y hacen Menos Daño
 
-// Ordenar funciones, variables y typehints
-// Creación de Boses
 // Definir tipos de Bonus (Escudo, más balas por disparo (una atrás de la otra), veneno, relentización global, rebote de balas)
+// Creación de Boses
+// Jefes y más enemigos: Naves que despliegan enemigos por detrás (Jefes), Tanques (Jefes, cura al rededor, cuesta más sacarle vida), Movimientos curvos, Curandero, Francotirador
 // Cuando se recoge un bonus aparece un menu para elegir entre 3 bonus aleatorios
 // Añadir sonidos
-// Jefes y más enemigos: Naves que despliegan enemigos por detrás (Jefes), Tanques (Jefes, cura al rededor, cuesta más sacarle vida), Movimientos curvos, Curandero, Francotirador
 // Eliminar Enemigos color parecido al bonus
 // Generación de enemigos continua, es decir cada vez que el juego se pausa se reinicia la generacion de enemigos, quiero que sea una sola generacion
 

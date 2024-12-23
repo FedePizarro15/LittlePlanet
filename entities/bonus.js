@@ -2,7 +2,7 @@ import { Entity } from "./entity.js"
 
 export class Bonus extends Entity {
     constructor(context, x, y, type) {
-        const radius = 15
+        const radius = 17.5
         const color = 'hsl(144, 50%, 50%)'
         const velocity = {x: 0, y: 0}
 
@@ -14,8 +14,8 @@ export class Bonus extends Entity {
         this.type = type
         
         this.image = new Image()
-        this.image.src = `./assets/images/sprites/bonus/${type}.png` // Ajusta la ruta según tu estructura
-        this.imageSize = 20
+        this.image.src = `./assets/images/sprites/bonus/${type}.png`
+        this.imageSize = 22.5 //px
     }
 
     draw() {
