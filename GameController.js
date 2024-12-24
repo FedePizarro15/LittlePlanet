@@ -2,10 +2,10 @@ import { InputController } from "./InputController.js"
 import { UIController } from "./UIController.js"
 
 export class GameController {
-    constructor(game, domElements) {
+    constructor(game, domElements, uiController) {
         this.game = game
-        this.uiController = new UIController(domElements)
-        this.inputController = new InputController(this.game, domElements)}
+        this.uiController = uiController
+        this.inputController = new InputController(game, domElements)}
         
     //     this.gameStates = {
     //         MENU: 'menu',

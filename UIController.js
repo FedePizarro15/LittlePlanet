@@ -1,29 +1,30 @@
 export class UIController {
-    constructor(domElements) {
+    constructor(game, domElements) {
+        this.game = game
         this.domElements = domElements
     }
 
-    updateScore(score) {
-        this.domElements.scoreEl.innerHTML = score
-        this.domElements.bigScoreEl.innerHTML = score
-        this.domElements.bigScoreEl2.innerHTML = score
+    updateScore() {
+        this.domElements.scoreEl.innerHTML = Math.floor(this.game.score)
+        this.domElements.bigScoreEl.innerHTML = Math.floor(this.game.score)
+        this.domElements.bigScoreEl2.innerHTML = Math.floor(this.game.score)
     }
 
-    updateRecordScore(record) {
-        this.domElements.recordEl.innerHTML = record
-        this.domElements.bigRecordEl.innerHTML = record
-        this.domElements.bigRecordEl2.innerHTML = record
+    updateRecordScore() {
+        this.domElements.recordEl.innerHTML = Math.floor(this.game.record)
+        this.domElements.bigRecordEl.innerHTML = Math.floor(this.game.record)
+        this.domElements.bigRecordEl2.innerHTML = Math.floor(this.game.record)
     }
 
-    updateTimer(timer) {
-        this.domElements.timeEl.innerHTML = timer
-        this.domElements.bigTimeEl.innerHTML = timer
-        this.domElements.bigTimeEl2.innerHTML = timer
+    updateTimer() {
+        this.domElements.timeEl.innerHTML = this.game.timer
+        this.domElements.bigTimeEl.innerHTML = this.game.timer
+        this.domElements.bigTimeEl2.innerHTML = this.game.timer
     }
 
-    showGameOver(score) {
+    showGameOver() {
+        this.updateScore()
         this.domElements.GOEl.style.display = 'block'
-        this.domElements.bigScoreEl.innerHTML = score
     }
 
     hideGameOver() {
@@ -31,6 +32,7 @@ export class UIController {
     }
 
     showPause() {
+        this.updateScore()
         this.domElements.pauseEl.style.display = 'block'
     }
 
@@ -39,12 +41,11 @@ export class UIController {
     }
 
     showModalEl() {
+        this.updateScore()
         this.domElements.modalEl.style.display = 'block'
     }
     
     hideModalEl() {
         this.domElements.modalEl.style.display = 'none'
     }
-
-    // Puedes agregar más métodos para manejar otros elementos de la UI
 }

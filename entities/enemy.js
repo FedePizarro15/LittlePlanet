@@ -17,8 +17,8 @@ export class Enemy extends Entity {
         this.context.fill()
         this.context.globalAlpha = 1
 
-        this.context.fillStyle = 'white'
-        this.context.font = '12px Arial'
+        this.context.fillStyle = 'hsl(0, 0.00%, 16.50%)'
+        this.context.font = `${this.radius}px Arial`
         this.context.textAlign = 'center'
         this.context.textBaseline = 'middle'
         this.context.fillText(Math.round(this.radius), this.x, this.y)
@@ -56,32 +56,13 @@ export class Enemy extends Entity {
     getDamage(damage, game, enemyIndex, damageTexts) {
         if (this.isDestroying) return
         
-        gsap.to(this, {radius: this.radius - damage})
-        this.showDamage(damage, damageTexts)
-
-        game.score += damage
-        game.uiController.updateScore(game.score)
-
-        if (this.radius < 15) {
-            this.enemyDestroy(game, enemyIndex)
-
-            game.score += 50
-            game.uiController.updateScore(game.score)
-
-            return
-        }
-    }
-
-    getDamage(damage, game, enemyIndex, damageTexts) {
-        if (this.isDestroying) return
-        
         const newRadius = this.radius - damage
         
         if (newRadius < 10) {
             this.enemyDestroy(game, enemyIndex)
 
             game.score += 50 + damage
-            game.uiController.updateScore(game.score)
+            game.uiController.updateScore(Math.floor(game.score))
 
             return
         }
@@ -90,7 +71,7 @@ export class Enemy extends Entity {
         this.showDamage(damage, damageTexts)
     
         game.score += damage
-        game.uiController.updateScore(game.score)
+        game.uiController.updateScore(Math.floor(game.score))
     }
         
     showDamage(damage, damageTexts) {

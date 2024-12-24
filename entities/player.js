@@ -1,8 +1,6 @@
 import { Entity } from "./entity.js"
 import { CONFIG } from "../config.js"
 
-// Escudo, más balas por disparo (una atrás de la otra), veneno, relentización global, rebote de balas
-
 export class Player extends Entity {
     constructor(context, x, y) {
         const radius = 10
@@ -13,179 +11,47 @@ export class Player extends Entity {
 
         this.boost = false
 
-        this.health = 100
-        this.score = 0
-
-        this.powerShield = 0
-        this.powerBullets = 0
-        this.powerPoison = 0
-        this.powerSlowdown = 0
-        this.powerRicochet = 0
+        this.powers = {
+            Shield: { value: 0, radius: 15, color: 'yellow' },
+            Bullets: { value: 0, radius: null, color: 'purple' },
+            Poison: { value: 0, radius: null, color: 'green' },
+            Slowdown: { value: 0, radius: 15, color: 'brown' },
+            Ricochet: { value: 0, radius: 15, color: 'red' }
+        }
     }
 
     update() {
         this.draw()
-
-        if (this.powerShield > 0) {
-            this.powerShield--
-            console.log(this.powerShield)
-        } else {
-            this.powerShield = 0
-            this.deactivateShield()
-        }
-
-        if (this.powerBullets > 0) {
-            this.powerBullets--
-            console.log(this.powerBullets)
-        } else {
-            this.powerBullets = 0
-            this.deactivateBullets()
-        }
-
-        if (this.powerPoison > 0) {
-            this.powerPoison--
-            console.log(this.powerPoison)
-        } else {
-            this.powerPoison = 0
-            this.deactivatePoison()
-        }
-
-        if (this.powerSlowdown > 0) {
-            this.powerSlowdown--
-            console.log(this.powerSlowdown)
-        } else {
-            this.powerSlowdown = 0
-            this.deactivateSlowdown()
-        }
-
-        if (this.powerRicochet > 0) {
-            this.powerRicochet--
-            console.log(this.powerRicochet)
-        } else {
-            this.powerRicochet = 0
-            this.deactivateRicochet()
-        }
+        
+        Object.entries(this.powers).forEach(([power, config]) => {
+            if (config.value > 0) {
+                config.value--
+                if (config.value <= 0) {
+                    this.deactivatePower(power)
+                }
+            }
+        })
     }
 
     addPowerup(type, duration) {
-        switch(type) {
-            case 'Shield':
-                this.activateShield(duration)
-                break
-            case 'Bullets':
-                this.activateBullets(duration)
-                break
-            case 'Poison':
-                this.activatePoison(duration)
-                break
-            case 'Slowdown':
-                this.activateSlowdown(duration)
-                break
-            case 'Ricochet':
-                this.activateRicochet(duration)
-                break
+        this.powers[type].value = duration
+        
+        const animations = {
+            radius: this.powers[type].radius || this.radius,
+            color: this.powers[type].color || this.color,
+            duration: 0.3
         }
+
+        gsap.to(this, animations)
     }
 
-    activateShield(duration) {
-        this.powerShield = duration
+    deactivatePower(type) {
+        this.powers[type].value = 0
         
         gsap.to(this, {
-            radius: 15,
-            duration: 0.3
-        })
-    }
-
-    deactivateShield() {
-        this.powerShield = 0
-
-        gsap.to(this, {
             radius: 10,
-            duration: 0.3
-        })
-    }
-
-    activateBullets(duration) {
-        this.powerBullets = duration
-
-        gsap.to(this, {
-            color: 'purple',
-            duration: 0.3
-        })
-    }
-
-    deactivateBullets() {
-        this.powerBullets = 0
-
-        gsap.to(this, {
             color: CONFIG.COLOR_PLAYER,
             duration: 0.3
         })
-    }
-
-    activatePoison(duration) {
-        this.powerPoison = duration
-
-        gsap.to(this, {
-            color: 'green',
-            duration: 0.3
-        })
-    }
-
-    deactivatePoison() {
-        this.powerPoison = 0
-
-        gsap.to(this, {
-            color: CONFIG.COLOR_PLAYER,
-            duration: 0.3
-        })
-    }
-
-    activateSlowdown(duration) {
-        this.powerSlowdown = duration
-
-        gsap.to(this, {
-            radius: this.radius * 1.5,
-            duration: 0.3
-        })
-        setTimeout(() => this.deactivateSlowdown(), duration)
-    }
-
-    deactivateSlowdown() {
-        this.powerSlowdown = 0
-
-        gsap.to(this, {
-            radius: 10,
-            duration: 0.3
-        })
-    }
-
-    activateRicochet(duration) {
-        this.powerRicochet = duration
-        gsap.to(this, {
-            radius: this.radius * 1.5,
-            duration: 0.3
-        })
-        setTimeout(() => this.deactivateRicochet(), duration)
-    }
-
-    deactivateRicochet() {
-        this.powerRicochet = 0
-        gsap.to(this, {
-            radius: 10,
-            duration: 0.3
-        })
-    }
-
-    takeDamage(amount) {
-        if (!this.isInvulnerable) {
-            this.health -= amount
-            gsap.to(this, {
-                radius: '-=2',
-                duration: 0.1,
-                yoyo: true,
-                repeat: 1
-            })
-        }
     }
 }

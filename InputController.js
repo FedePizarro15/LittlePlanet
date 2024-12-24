@@ -1,19 +1,39 @@
 import { resizeElements } from "./utils.js"
 
 export class InputController {
+    static EVENTS = {
+        CLICK: 'click',
+        KEYDOWN: 'keydown',
+        RESIZE: 'resize',
+        VISIBILITY_CHANGE: 'visibilitychange'
+    }
+
     constructor(game, domElements) {
         this.game = game
         this.domElements = domElements
-        this.attachEventListeners()
+
         this.handleGameStartAndRestart = this.handleGameStartAndRestart.bind(this)
+        this.handleShootProjectiles = this.handleShootProjectiles.bind(this)
+        this.handleKeyDown = this.handleKeyDown.bind(this)
+
+        this.attachEventListeners()
     }
 
     attachEventListeners() {
-        window.addEventListener('click', (event) => this.handleShootProjectiles(event))
-        window.addEventListener('keydown', (event) => this.handleKeyDown(event))
-        window.addEventListener('resize', () => this.handleResize())
-        document.addEventListener('visibilitychange', () => this.handleVisibilityChange())
+        this.attachWindowEvents()
+        this.attachDOMEvents()
+    }
 
+    attachWindowEvents() {
+        const { CLICK, KEYDOWN, RESIZE, VISIBILITY_CHANGE } = InputController.EVENTS
+
+        window.addEventListener(CLICK, this.handleShootProjectiles)
+        window.addEventListener(KEYDOWN, this.handleKeyDown)
+        window.addEventListener(RESIZE, () => this.handleResize())
+        document.addEventListener(VISIBILITY_CHANGE, () => this.handleVisibilityChange())
+    }
+
+    attachDOMEvents() {
         this.domElements.startGameBtn.addEventListener('click', () => this.handleGameStartAndRestart(this.domElements.modalEl))
         this.domElements.restartGameBtn.addEventListener('click', () => this.handleGameStartAndRestart(this.domElements.GOEl))
         this.domElements.restartGameBtn2.addEventListener('click', () => this.handleGameStartAndRestart(this.domElements.pauseEl))
@@ -23,7 +43,9 @@ export class InputController {
     handleShootProjectiles(event) {
         if (this.game.gameMode != 'Playing') return
 
-        this.game.player.boost ? this.spawnDoubleProjectiles(event) : this.spawnSingleProjectile(event)
+        this.game.player.boost ?
+            this.spawnDoubleProjectiles(event) :
+            this.spawnSingleProjectile(event)
     }
     
     spawnDoubleProjectiles(event) {
@@ -42,7 +64,7 @@ export class InputController {
             y: -velocity1.y
         }
 
-        const isPoisoned = this.game.player.powerPoison
+        const isPoisoned = this.game.player.powers.Poison.value
     
         this.game.spawnProjectile(center.x, center.y, radius, color, velocity1, isPoisoned)
         this.game.spawnProjectile(center.x, center.y, radius, color, velocity2, isPoisoned)
@@ -59,9 +81,9 @@ export class InputController {
 
         const velocity = this.calculateProjectileVelocity(event, center)
 
-        const isPoisoned = this.game.player.powerPoison
+        const isPoisoned = this.game.player.powers.Poison.value
     
-        this.game.spawnProjectile(center.x, center.y, radius, color, velocity, Boolean(isPoisoned))
+        this.game.spawnProjectile(center.x, center.y, radius, color, velocity, isPoisoned)
     }
 
     calculateProjectileVelocity(event, center, baseSpeed = 5) {
@@ -126,8 +148,7 @@ export class InputController {
         this.game.enemyIntervals.forEach(interval => clearInterval(interval))
         this.game.bonusIntervals.forEach(bonusInterval => clearInterval(bonusInterval))
         
-        this.domElements.bigScoreEl2.innerHTML = this.game.score
-        this.domElements.pauseEl.style.display = 'block'
+        this.game.uiController.showPause()
     
         this.game.gameMode = "Paused"
     }

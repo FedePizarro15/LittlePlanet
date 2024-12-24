@@ -16,6 +16,7 @@ import {
     randomStarDirection,
     secondsToFrames
 } from './utils.js'
+
 import { Player } from './entities/player.js'
 import { Star } from './entities/star.js'
 import { Projectile } from './entities/projectile.js'
@@ -23,44 +24,31 @@ import { UIController } from './UIController.js'
 
 
 class Game {
-    constructor(domElements, config) {
+    constructor(domElements, config, uiController) {
         this.domElements = domElements
         this.config = config
+        this.uiController = uiController
 
-        this.uiController = new UIController(domElements)
+        this.enemyIntervals = []
+        this.bonusIntervals = []
 
         this.canvas = domElements.canvas
         this.context = domElements.context
         
         this.animate = this.animate.bind(this)
+        this.handleEnemyDamage = this.handleEnemyDamage.bind(this)
 
         this.player = null
 
-        this.projectiles = []
-        this.enemies = []
-        this.particles = []
-        this.stars = []
-        this.damageTexts = []
-        this.bonusList = []
-        this.enemyIntervals = []
-        this.bonusIntervals = []
-
+        this.gameMode = 'Starting'
         this.animationID = null
-        
-        this.score = 0
         this.record = 0
-        this.difficulty = this.config.INITIAL_DIFFICULTY
-        this.frames = 0
-        this.time = 0
-        this.timer = 0
+
+        this.resetGameState()
+        this.resetEntities()
         
         this.starDirectionX = randomStarDirection()
         this.starDirectionY = randomStarDirection()
-        
-        this.gameMode = "Starting"
-        this.esc = 0
-        this.interval = this.config.ENEMY_SPAWN_INTERVAL
-        this.bonusInterval = this.config.BONUS_SPAWN_INTERVAL
     }
 
     init() {
@@ -116,25 +104,27 @@ class Game {
     animate() {
         if (this.gameMode != "Playing") return
 
+        this.updateGameState()
+        updateBackground(this.context, this.canvas.width, this.canvas.height)
+        this.updateEntities(this.stars, this.particles, this.projectiles, this.bonusList, this.enemies, this.damageTexts, this.context, this.canvas.width, this.canvas.height, this.player)
+    }
+
+    updateGameState() {
         this.animationID = requestAnimationFrame(this.animate)
         this.difficulty *= this.config.DIFFICULTY_INCREASE
-        
-        updateBackground(this.context, this.canvas.width, this.canvas.height)
 
         const {frames, time, timer} = updateTimer(this.frames, this.time, this.timer)
         this.frames = frames
         this.time = time
         this.timer = timer
-        this.uiController.updateTimer(this.timer)
+        this.uiController.updateTimer()
 
-        this.uiController.updateScore(this.score)
+        this.uiController.updateScore()
 
         const record = updateRecord(this.score, this.record)
         this.record = record
-        this.uiController.updateRecordScore(this.record)
+        this.uiController.updateRecordScore()
 
-        this.updateEntities(this.stars, this.particles, this.projectiles, this.bonusList, this.enemies, this.damageTexts, this.context, this.canvas.width, this.canvas.height, this.player)
-        this.maintainStarCount()
     }
 
     updateEntities(stars, particles, projectiles, bonusList, enemies, damageTexts, context, width, height, player) {
@@ -145,6 +135,7 @@ class Game {
         updateBonus(bonusList, projectiles, player)
         this.updateEnemies(enemies, projectiles)
         updateDamageTexts(damageTexts, context)
+        this.maintainStarCount()
     }
     
     updateEnemies(enemies, projectiles) {
@@ -169,16 +160,16 @@ class Game {
     }
     
     endGame(enemy, enemyIndex) {
-        if (this.player.powerShield) {
+        if (this.player.powers.Shield.value) {
             enemy.isDestroying = true
             this.enemies.splice(enemyIndex, 1)
             
-            this.player.deactivateShield()
+            this.player.deactivatePower('Shield')
         } else {
             cancelAnimationFrame(this.animationID)
             clearIntervals(this.enemyIntervals, this.bonusIntervals)
             this.gameMode = "Lost"
-            this.uiController.showGameOver(this.score)
+            this.uiController.showGameOver()
         }
     }
     
@@ -197,7 +188,7 @@ class Game {
 
         this.projectiles.splice(this.projectiles.indexOf(projectile), 1)
         
-        let damage = projectile.radius * 2
+        const damage = projectile.radius * 2
         enemy.getDamage(damage, this, enemyIndex, this.damageTexts)
     }
 
@@ -219,7 +210,7 @@ class Game {
         const projectile = new Projectile(this.context, x, y, radius, color, velocity, isPoisoned)
         this.projectiles.push(projectile)
 
-        if (this.player.powerBullets) {
+        if (this.player.powers.Bullets.value) {
             setTimeout(() => {
                 const projectile2 = new Projectile(this.context, x, y, radius, color, velocity, isPoisoned)
                 this.projectiles.push(projectile2)
