@@ -1,5 +1,3 @@
-import { CONFIG } from './config.js'
-import { DOMElements } from './domElements.js'
 import {
     clearIntervals,
     spawnEnemies,
@@ -154,7 +152,7 @@ class Game {
             enemy.update()
     
             if (isCollision(this.player, enemy) && !this.config.TEST && !enemy.isDestroying) {
-                this.endGame()
+                this.endGame(enemy, index)
                 return
             }
     
@@ -169,11 +167,18 @@ class Game {
         }
     }
     
-    endGame() {
-        cancelAnimationFrame(this.animationID)
-        clearIntervals(this.enemyIntervals, this.bonusIntervals)
-        this.gameMode = "Lost"
-        this.uiController.showGameOver(this.score)
+    endGame(enemy, enemyIndex) {
+        if (this.player.powerShield) {
+            enemy.isDestroying = true
+            this.enemies.splice(enemyIndex, 1)
+            
+            this.player.deactivateShield()
+        } else {
+            cancelAnimationFrame(this.animationID)
+            clearIntervals(this.enemyIntervals, this.bonusIntervals)
+            this.gameMode = "Lost"
+            this.uiController.showGameOver(this.score)
+        }
     }
     
     handleEnemyProjectileCollision(projectile, projectileIndex, enemy, enemyIndex) {
@@ -182,42 +187,44 @@ class Game {
         createParticlesOnCollision(projectile, enemy, this.particles)
         this.showDamage(projectile.radius * 2, enemy)
     
-        if (enemy.radius - 10 > 5) {
-            this.handleEnemyDamage(enemy, projectile)
+        if (enemy.radius - projectile.radius * 2 > 5) {
+            this.handleEnemyDamage(enemy, enemyIndex, projectile, projectileIndex)
         } else {
             this.handleEnemyDestruction(enemy, enemyIndex, projectile, projectileIndex)
         }
     }
 
-    handleEnemyDamage(enemy, projectile) {
+    handleEnemyDamage(enemy, enemyIndex, projectile, projectileIndex) {
+        // if (projectile.isPoisoned) {
+        //     for (let ticks = 0; ticks < 3; ticks++) {
+        //         setTimeout(() => {
+        //             this.score += 5
+        //             this.uiController.updateScore(this.score)
+            
+        //             gsap.to(enemy, {radius: enemy.radius - 5})
+        //         }, 100);
+
+        //         if (enemy.radius <= 15) {
+        //             this.handleEnemyDestruction(enemy, enemyIndex, projectileIndex)
+        //         }
+        //     }
+        // }
+
         this.score += 10
         this.uiController.updateScore(this.score)
+
         gsap.to(enemy, {radius: enemy.radius - projectile.radius * 2})
+
         this.projectiles.splice(this.projectiles.indexOf(projectile), 1)
     }
 
-    handleEnemyDestruction(enemy, enemyIndex, projectile, projectileIndex) {
-        enemy.isDestroying = true
-        enemy.velocity = {
-            x: enemy.velocity.x * enemy.radius / 20 / this.difficulty,
-            y: enemy.velocity.y * enemy.radius / 20 / this.difficulty
-        }
-        
+    handleEnemyDestruction(enemy, enemyIndex, projectileIndex) {
+        enemy.enemyDestroy(this, enemyIndex)
+
         this.score += 50
         this.uiController.updateScore(this.score)
-        this.projectiles.splice(projectileIndex, 1)
 
-        gsap.to(enemy, {
-            radius: 0,
-            alpha: 0,
-            duration: 0.35,
-            ease: "power2.in",
-            onComplete: () => {
-                if (this.enemies.includes(enemy)) {
-                    this.enemies.splice(enemyIndex, 1)
-                }
-            }
-        })
+        this.projectiles.splice(projectileIndex, 1)
     }
     
     showDamage(damage, enemy) {
@@ -245,9 +252,16 @@ class Game {
         }
     }
 
-    spawnProjectile(x, y, radius, color, velocity) {
-        const projectile = new Projectile(this.context, x, y, radius, color, velocity)
+    spawnProjectile(x, y, radius, color, velocity, isPoisoned) {
+        const projectile = new Projectile(this.context, x, y, radius, color, velocity, isPoisoned)
         this.projectiles.push(projectile)
+
+        if (this.player.powerBullets) {
+            setTimeout(() => {
+                const projectile2 = new Projectile(this.context, x, y, radius, color, velocity, isPoisoned)
+                this.projectiles.push(projectile2)
+            }, 100)
+        }
     }
 
     resizeCanvas() {

@@ -22,4 +22,24 @@ export class Enemy extends Entity {
         this.x += this.velocity.x * velocityScale
         this.y += this.velocity.y * velocityScale
     }
+
+    enemyDestroy(game, enemyIndex) {
+        this.isDestroying = true
+        this.velocity = {
+            x: this.velocity.x * this.radius / 20 / this.difficulty,
+            y: this.velocity.y * this.radius / 20 / this.difficulty
+        }
+
+        gsap.to(this, {
+            radius: 0,
+            alpha: 0,
+            duration: 0.35,
+            ease: "power2.in",
+            onComplete: () => {
+                if (game.enemies.includes(this)) {
+                    game.enemies.splice(enemyIndex, 1)
+                }
+            }
+        })
+    }
 }

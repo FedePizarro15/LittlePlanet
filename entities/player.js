@@ -43,15 +43,18 @@ export class Player extends Entity {
 
     activateShield(duration) {
         this.powerShield = true
+        
         gsap.to(this, {
-            radius: this.radius * 1.5,
+            radius: 15,
             duration: 0.3
         })
+        
         setTimeout(() => this.deactivateShield(), duration)
     }
 
     deactivateShield() {
         this.powerShield = false
+
         gsap.to(this, {
             radius: 10,
             duration: 0.3
@@ -60,34 +63,40 @@ export class Player extends Entity {
 
     activateBullets(duration) {
         this.powerBullets = true
+
         gsap.to(this, {
-            radius: this.radius * 1.5,
+            color: 'purple',
             duration: 0.3
         })
+
         setTimeout(() => this.deactivateBullets(), duration)
     }
 
     deactivateBullets() {
         this.powerBullets = false
+
         gsap.to(this, {
-            radius: 10,
+            color: CONFIG.COLOR_PLAYER,
             duration: 0.3
         })
     }
 
     activatePoison(duration) {
         this.powerPoison = true
+
         gsap.to(this, {
-            radius: this.radius * 1.5,
+            color: 'green',
             duration: 0.3
         })
+
         setTimeout(() => this.deactivatePoison(), duration)
     }
 
     deactivatePoison() {
         this.powerPoison = false
+
         gsap.to(this, {
-            radius: 10,
+            color: CONFIG.COLOR_PLAYER,
             duration: 0.3
         })
     }

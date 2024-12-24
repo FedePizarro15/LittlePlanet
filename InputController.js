@@ -41,9 +41,11 @@ export class InputController {
             x: -velocity1.x,
             y: -velocity1.y
         }
+
+        const isPoisoned = this.game.player.powerPoison
     
-        this.game.spawnProjectile(center.x, center.y, radius, color, velocity1)
-        this.game.spawnProjectile(center.x, center.y, radius, color, velocity2)
+        this.game.spawnProjectile(center.x, center.y, radius, color, velocity1, isPoisoned)
+        this.game.spawnProjectile(center.x, center.y, radius, color, velocity2, isPoisoned)
     }
     
     spawnSingleProjectile(event) {
@@ -56,8 +58,10 @@ export class InputController {
         const color = 'rgb(182, 135, 212)'
 
         const velocity = this.calculateProjectileVelocity(event, center)
+
+        const isPoisoned = this.game.player.powerPoison
     
-        this.game.spawnProjectile(center.x, center.y, radius, color, velocity)
+        this.game.spawnProjectile(center.x, center.y, radius, color, velocity, isPoisoned)
     }
 
     calculateProjectileVelocity(event, center, baseSpeed = 5) {

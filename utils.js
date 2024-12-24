@@ -220,7 +220,7 @@ function getRandomBonus(context, canvas) {
         if (distance > minRadius) break
     } while (true)
 
-    const bonusTypes = ['Shield', 'Bullets', 'Poison', 'Slowdown', 'Ricochet']
+    const bonusTypes = ['Shield', 'Bullets', 'Poison'] //, 'Slowdown', 'Ricochet'
     const randomType = bonusTypes[Math.floor(Math.random() * bonusTypes.length)]
     
     return new Bonus(context, x, y, randomType)
@@ -252,10 +252,27 @@ function handleBonusProjectileCollision(projectileIndex, bonus, bonusIndex, bonu
         }
     })
 
-    player.color = 'red'
-    setTimeout(() => {
-        player.color = 'white'
-    }, 15000)
+    let duration
+
+    switch(bonus.type) {
+        case 'Shield':
+            duration = 15000
+            break
+        case 'Bullets':
+            duration = 10000
+            break
+        case 'Poison':
+            duration = 10000
+            break
+        case 'Slowdown':
+            duration = 15000
+            break
+        case 'Ricochet':
+            duration = 7500
+            break
+    }
+
+    player.addPowerup(bonus.type, duration)
 }
 
 function formatTime(value) {
