@@ -61,7 +61,7 @@ export class InputController {
 
         const isPoisoned = this.game.player.powerPoison
     
-        this.game.spawnProjectile(center.x, center.y, radius, color, velocity, isPoisoned)
+        this.game.spawnProjectile(center.x, center.y, radius, color, velocity, Boolean(isPoisoned))
     }
 
     calculateProjectileVelocity(event, center, baseSpeed = 5) {

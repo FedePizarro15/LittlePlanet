@@ -8,20 +8,66 @@ export class Player extends Entity {
         const radius = 10
         const color = CONFIG.COLOR_PLAYER
         const velocity = {x: 0, y: 0}
+
         super(context, x, y, radius, color, velocity)
+
         this.boost = false
-        this.powerups = []
+
         this.health = 100
         this.score = 0
-        this.powerShield = false
-        this.powerBullets = false
-        this.powerPoison = false
-        this.powerSlowdown = false
-        this.powerRicochet = false
+
+        this.powerShield = 0
+        this.powerBullets = 0
+        this.powerPoison = 0
+        this.powerSlowdown = 0
+        this.powerRicochet = 0
+    }
+
+    update() {
+        this.draw()
+
+        if (this.powerShield > 0) {
+            this.powerShield--
+            console.log(this.powerShield)
+        } else {
+            this.powerShield = 0
+            this.deactivateShield()
+        }
+
+        if (this.powerBullets > 0) {
+            this.powerBullets--
+            console.log(this.powerBullets)
+        } else {
+            this.powerBullets = 0
+            this.deactivateBullets()
+        }
+
+        if (this.powerPoison > 0) {
+            this.powerPoison--
+            console.log(this.powerPoison)
+        } else {
+            this.powerPoison = 0
+            this.deactivatePoison()
+        }
+
+        if (this.powerSlowdown > 0) {
+            this.powerSlowdown--
+            console.log(this.powerSlowdown)
+        } else {
+            this.powerSlowdown = 0
+            this.deactivateSlowdown()
+        }
+
+        if (this.powerRicochet > 0) {
+            this.powerRicochet--
+            console.log(this.powerRicochet)
+        } else {
+            this.powerRicochet = 0
+            this.deactivateRicochet()
+        }
     }
 
     addPowerup(type, duration) {
-        this.powerups.push({type, duration})
         switch(type) {
             case 'Shield':
                 this.activateShield(duration)
@@ -42,18 +88,16 @@ export class Player extends Entity {
     }
 
     activateShield(duration) {
-        this.powerShield = true
+        this.powerShield = duration
         
         gsap.to(this, {
             radius: 15,
             duration: 0.3
         })
-        
-        setTimeout(() => this.deactivateShield(), duration)
     }
 
     deactivateShield() {
-        this.powerShield = false
+        this.powerShield = 0
 
         gsap.to(this, {
             radius: 10,
@@ -62,18 +106,16 @@ export class Player extends Entity {
     }
 
     activateBullets(duration) {
-        this.powerBullets = true
+        this.powerBullets = duration
 
         gsap.to(this, {
             color: 'purple',
             duration: 0.3
         })
-
-        setTimeout(() => this.deactivateBullets(), duration)
     }
 
     deactivateBullets() {
-        this.powerBullets = false
+        this.powerBullets = 0
 
         gsap.to(this, {
             color: CONFIG.COLOR_PLAYER,
@@ -82,18 +124,16 @@ export class Player extends Entity {
     }
 
     activatePoison(duration) {
-        this.powerPoison = true
+        this.powerPoison = duration
 
         gsap.to(this, {
             color: 'green',
             duration: 0.3
         })
-
-        setTimeout(() => this.deactivatePoison(), duration)
     }
 
     deactivatePoison() {
-        this.powerPoison = false
+        this.powerPoison = 0
 
         gsap.to(this, {
             color: CONFIG.COLOR_PLAYER,
@@ -102,7 +142,8 @@ export class Player extends Entity {
     }
 
     activateSlowdown(duration) {
-        this.powerSlowdown = true
+        this.powerSlowdown = duration
+
         gsap.to(this, {
             radius: this.radius * 1.5,
             duration: 0.3
@@ -111,7 +152,8 @@ export class Player extends Entity {
     }
 
     deactivateSlowdown() {
-        this.powerSlowdown = false
+        this.powerSlowdown = 0
+
         gsap.to(this, {
             radius: 10,
             duration: 0.3
@@ -119,7 +161,7 @@ export class Player extends Entity {
     }
 
     activateRicochet(duration) {
-        this.powerRicochet = true
+        this.powerRicochet = duration
         gsap.to(this, {
             radius: this.radius * 1.5,
             duration: 0.3
@@ -128,7 +170,7 @@ export class Player extends Entity {
     }
 
     deactivateRicochet() {
-        this.powerRicochet = false
+        this.powerRicochet = 0
         gsap.to(this, {
             radius: 10,
             duration: 0.3

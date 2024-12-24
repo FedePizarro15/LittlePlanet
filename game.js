@@ -14,6 +14,7 @@ import {
     resizeElements,
     createParticlesOnCollision,
     randomStarDirection,
+    secondsToFrames
 } from './utils.js'
 import { Player } from './entities/player.js'
 import { Star } from './entities/star.js'
@@ -140,7 +141,7 @@ class Game {
         updateStars(stars)
         updateParticles(particles)
         updateProjectiles(projectiles, width, height)
-        this.player.draw()
+        player.update()
         updateBonus(bonusList, projectiles, player)
         this.updateEnemies(enemies, projectiles)
         updateDamageTexts(damageTexts, context)
@@ -149,7 +150,7 @@ class Game {
     updateEnemies(enemies, projectiles) {
         for (let index = enemies.length - 1; index >= 0; index--) {
             const enemy = enemies[index]
-            enemy.update()
+            enemy.update(this, index, this.damageTexts)
     
             if (isCollision(this.player, enemy) && !this.config.TEST && !enemy.isDestroying) {
                 this.endGame(enemy, index)
@@ -160,7 +161,7 @@ class Game {
                 const projectile = projectiles[projectileIndex]
                 
                 if (isCollision(projectile, enemy)) {
-                    this.handleEnemyProjectileCollision(projectile, projectileIndex, enemy, index)
+                    this.handleEnemyProjectileCollision(projectile, enemy, index)
                     break
                 }
             }
@@ -181,61 +182,23 @@ class Game {
         }
     }
     
-    handleEnemyProjectileCollision(projectile, projectileIndex, enemy, enemyIndex) {
+    handleEnemyProjectileCollision(projectile, enemy, enemyIndex) {
         if (enemy.isDestroying) return
     
         createParticlesOnCollision(projectile, enemy, this.particles)
-        this.showDamage(projectile.radius * 2, enemy)
-    
-        if (enemy.radius - projectile.radius * 2 > 5) {
-            this.handleEnemyDamage(enemy, enemyIndex, projectile, projectileIndex)
-        } else {
-            this.handleEnemyDestruction(enemy, enemyIndex, projectile, projectileIndex)
-        }
+
+        this.handleEnemyDamage(projectile, enemy, enemyIndex)
     }
 
-    handleEnemyDamage(enemy, enemyIndex, projectile, projectileIndex) {
-        // if (projectile.isPoisoned) {
-        //     for (let ticks = 0; ticks < 3; ticks++) {
-        //         setTimeout(() => {
-        //             this.score += 5
-        //             this.uiController.updateScore(this.score)
-            
-        //             gsap.to(enemy, {radius: enemy.radius - 5})
-        //         }, 100);
-
-        //         if (enemy.radius <= 15) {
-        //             this.handleEnemyDestruction(enemy, enemyIndex, projectileIndex)
-        //         }
-        //     }
-        // }
-
-        this.score += 10
-        this.uiController.updateScore(this.score)
-
-        gsap.to(enemy, {radius: enemy.radius - projectile.radius * 2})
+    handleEnemyDamage(projectile, enemy, enemyIndex) {
+        if (projectile.powerPoison) {
+            enemy.isPoisoned += secondsToFrames(3)
+        }
 
         this.projectiles.splice(this.projectiles.indexOf(projectile), 1)
-    }
-
-    handleEnemyDestruction(enemy, enemyIndex, projectileIndex) {
-        enemy.enemyDestroy(this, enemyIndex)
-
-        this.score += 50
-        this.uiController.updateScore(this.score)
-
-        this.projectiles.splice(projectileIndex, 1)
-    }
-    
-    showDamage(damage, enemy) {
-        this.damageTexts.push({
-            x: enemy.x,
-            y: enemy.y,
-            damage: damage,
-            alpha: 1,
-            duration: 60,
-            color: enemy.color
-        })
+        
+        let damage = projectile.radius * 2
+        enemy.getDamage(damage, this, enemyIndex, this.damageTexts)
     }
 
     maintainStarCount() {

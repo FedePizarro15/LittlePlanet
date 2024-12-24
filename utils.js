@@ -169,6 +169,10 @@ export function randomStarDirection() {
     return direction * speed
 }
 
+export function secondsToFrames(seconds) {
+    return seconds * 60
+}
+
 function getRandomEnemy(context, difficulty, canvas) {
     const width = canvas.width
     const height = canvas.height
@@ -256,19 +260,19 @@ function handleBonusProjectileCollision(projectileIndex, bonus, bonusIndex, bonu
 
     switch(bonus.type) {
         case 'Shield':
-            duration = 15000
+            duration = secondsToFrames(15)
             break
         case 'Bullets':
-            duration = 10000
+            duration = secondsToFrames(10)
             break
         case 'Poison':
-            duration = 10000
+            duration = secondsToFrames(10)
             break
         case 'Slowdown':
-            duration = 15000
+            duration = secondsToFrames(15)
             break
         case 'Ricochet':
-            duration = 7500
+            duration = secondsToFrames(7.5)
             break
     }
 
