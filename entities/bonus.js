@@ -1,4 +1,5 @@
 import { Entity } from "./entity.js"
+import { secondsToFrames } from "../utils.js"
 
 export class Bonus extends Entity {
     constructor(context, x, y, type) {
@@ -12,6 +13,7 @@ export class Bonus extends Entity {
         this.animation = true
         this.isDestroying = false
         this.type = type
+        this.lifetime = secondsToFrames(10)
         
         this.image = new Image()
         this.image.src = `./assets/images/sprites/bonus/${type}.png`
@@ -37,6 +39,13 @@ export class Bonus extends Entity {
     update() {
         this.draw()
 
+        this.lifetime--
+
+        if (this.lifetime <= 0 && !this.isDestroying) {
+            this.bonusDestroy()
+            return
+        }
+
         if (this.animation) {
             this.alpha += 0.015
             this.radius += 0.075
@@ -48,5 +57,15 @@ export class Bonus extends Entity {
         if (this.alpha <= 0.3 || this.alpha >= 1) {
             this.animation = !this.animation
         }
+    }
+
+    bonusDestroy() {
+        this.isDestroying = true
+        gsap.to(this, {
+            radius: this.radius * 2,
+            alpha: 0,
+            duration: 1,
+            ease: "power2.in",
+        })
     }
 }

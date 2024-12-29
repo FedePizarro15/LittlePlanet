@@ -3,6 +3,7 @@ import { Entity } from "./entity.js"
 export class Enemy extends Entity {
     constructor(context, x, y, radius, color, velocity, difficulty) {
         super(context, x, y, radius, color, velocity)
+        this.targetRadius = radius
         this.difficulty = difficulty
         this.isDestroying = false
         this.isPoisoned = 0
@@ -21,7 +22,7 @@ export class Enemy extends Entity {
         this.context.font = `${this.radius}px Arial`
         this.context.textAlign = 'center'
         this.context.textBaseline = 'middle'
-        this.context.fillText(Math.round(this.radius), this.x, this.y)
+        this.context.fillText(Math.round(this.radius - 10), this.x, this.y)
     }
 
     normalizeVelocity() {
@@ -56,18 +57,26 @@ export class Enemy extends Entity {
     getDamage(damage, game, enemyIndex, damageTexts) {
         if (this.isDestroying) return
         
-        const newRadius = this.radius - damage
+        this.targetRadius = this.targetRadius || this.radius
+        this.targetRadius -= damage
         
-        if (newRadius < 10) {
+        if (this.targetRadius <= 10) {
             this.enemyDestroy(game, enemyIndex)
 
             game.score += 50 + damage
             game.uiController.updateScore(Math.floor(game.score))
+        
+            this.showDamage(damage + 50, damageTexts)
 
             return
         }
     
-        gsap.to(this, {radius: newRadius})
+        gsap.to(this, {
+            radius: this.targetRadius,
+            overwrite: true,
+            duration: 0.5
+        })
+
         this.showDamage(damage, damageTexts)
     
         game.score += damage

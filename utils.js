@@ -102,6 +102,11 @@ export function updateBonus(bonusList, projectiles, player) {
     for (let index = bonusList.length -1; index >= 0; index--) {
         const bonus = bonusList[index]
         bonus.update()
+        
+        if ((bonus.lifetime <= 0 && bonus.alpha <= 0) || (bonus.isDestroying && bonus.alpha <= 0)) {
+            bonusList.splice(index, 1)
+            continue
+        }
 
         for (let projectileIndex = projectiles.length - 1; projectileIndex >= 0; projectileIndex--) {
             const projectile = projectiles[projectileIndex]

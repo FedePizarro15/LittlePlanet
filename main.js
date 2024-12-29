@@ -1,8 +1,8 @@
-// Los enemigos reciben menos daño si se ataca rápido (creo que se cancela la animación anterior, por lo que no llegan a reducir el radio y arranca nuevamente la nueva animación)
 // Terminar últimos dos bonus
-// Nuevos tipos de enemigos y boses
 // Añadir puntaje al recoger bonus
-// Poner tiempo limitado para la aparición de los bonus
+// Nuevos tipos de enemigos y boses
+// Controlar por que los enemigos desaparecen
+// Poder guardar partidas y records
 
 import { Game } from './game.js'
 import { GameController } from './GameController.js'
